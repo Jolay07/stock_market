@@ -1,10 +1,8 @@
 package com.github.jolay_07.stockMarket
 
 import org.apache.spark.ml.Pipeline
-import org.apache.spark.ml.classification.{DecisionTreeClassifier, RandomForestClassifier}
-import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.ml.feature.VectorIndexer
-import org.apache.spark.ml.regression.{DecisionTreeRegressionModel, DecisionTreeRegressor, LinearRegression}
+import org.apache.spark.ml.regression.DecisionTreeRegressor
 import org.apache.spark.sql.functions.{avg, col, desc, expr, stddev}
 
 object stockAnalysis extends App{
@@ -34,6 +32,7 @@ object stockAnalysis extends App{
     .orderBy(desc("avg(daily_return)"))
     .show(10, false)
 
+//saving daily return increase in parquet file
   dailyReturn.write
     .format("parquet")
     .mode("overwrite")
@@ -100,28 +99,8 @@ object stockAnalysis extends App{
   val predictions = model.transform(testData)
   predictions.show(10, false)
 
-  // Select (prediction, true label) and compute test error.
-  val evaluator = new RegressionEvaluator()
-    .setLabelCol("label")
-    .setPredictionCol("prediction")
-    .setMetricName("rmse")
-  val rmse = evaluator.evaluate(predictions)
-  println(s"Root Mean Squared Error (RMSE) on test data = $rmse")
+// In utilities we have function
+  utilities.showAccuracy(predictions)
 
-//  val treeModel = model.stages(1).asInstanceOf[DecisionTreeRegressionModel]
-//  println(s"Learned regression tree model:\n ${treeModel.toDebugString}")
 
-//  val linReg = new LinearRegression()
-//
-//  val Array(train,test) = endDf.randomSplit(Array(0.75,0.25))
-//
-//  val lrModel = linReg.fit(train)
-//
-//  val intercept = lrModel.intercept
-//  val coefficients = lrModel.coefficients
-//  val x1 = coefficients(0)
-//  val x2 = coefficients(1) //of course we would have to know how many x columns we have as features
-//
-//  println(s"Intercept: $intercept and coefficient for x1 is $x1 and for x2 is $x2")
-//  //simple linear regression is unlikely to yield anything on financial data which foll
 }
