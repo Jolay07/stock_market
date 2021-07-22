@@ -3,7 +3,12 @@ package com.github.jolay_07.stockMarket
 import org.apache.spark.sql.SparkSession
 
 object utilities {
-
+  /**
+   * @param appName
+   * @param verbose
+   * @param master
+   * @return
+   */
   def createSpark(appName:String, verbose:Boolean = true, master: String= "local"): SparkSession = {
     if (verbose) println(s"$appName with Scala version: ${util.Properties.versionNumberString}")
 
@@ -12,4 +17,5 @@ object utilities {
     if (verbose) println(s"Session started on Spark version ${spark.version}")
     spark
   }
+
 }
